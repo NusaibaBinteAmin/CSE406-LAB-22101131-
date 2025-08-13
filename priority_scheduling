@@ -1,0 +1,49 @@
+num_processes = int(input("Enter number of processes: "))
+process_details = {}
+
+for i in range(num_processes):
+    process_id = f"P{i + 1}"
+    arrival_time = int(input(f"Enter Arrival Time for {process_id}: "))
+    burst_time = int(input(f"Enter Burst Time for {process_id}: "))
+    priority = int(input(f"Enter Priority for {process_id}: "))
+    process_details[process_id] = [arrival_time, burst_time, priority]
+
+
+processes = sorted(process_details.items(), key=lambda x: x[1][0])
+
+remaining_time = {pid: bt[1] for pid, bt in process_details.items()}
+completion_time = {}
+waiting_time = {}
+turnaround_time = {}
+current_time = 0
+completed_processes = []
+
+while len(completed_processes) < num_processes:
+    
+    available_processes = [pid for pid, details in process_details.items() if details[0] <= current_time and pid not in completed_processes]
+
+    if available_processes:
+    
+        highest_priority_pid = min(available_processes, key=lambda pid: process_details[pid][2])
+
+        burst_time = process_details[highest_priority_pid][1]
+        current_time += burst_time
+        completion_time[highest_priority_pid] = current_time
+
+        turnaround_time[highest_priority_pid] = completion_time[highest_priority_pid] - process_details[highest_priority_pid][0]
+        waiting_time[highest_priority_pid] = turnaround_time[highest_priority_pid] - burst_time
+
+        completed_processes.append(highest_priority_pid)
+
+    else:
+        current_time += 1
+
+print("\nProcess | Arrival Time | Burst Time | Priority | Waiting Time | Turnaround Time | Completion Time")
+for pid in process_details:
+    print(f"{pid:<10} {process_details[pid][0]:<14} {process_details[pid][1]:<13} {process_details[pid][2]:<10} {waiting_time[pid]:<15} {turnaround_time[pid]:<18} {completion_time[pid]}")
+
+avg_waiting_time = sum(waiting_time.values()) / num_processes
+avg_turnaround_time = sum(turnaround_time.values()) / num_processes
+
+print(f"\nAverage Waiting Time: {avg_waiting_time:.2f}")
+print(f"Average Turnaround Time: {avg_turnaround_time:.2f}")
