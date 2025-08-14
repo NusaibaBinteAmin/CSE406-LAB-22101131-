@@ -1,0 +1,26 @@
+num_requests = int(input("Enter the number of disk requests: "))
+
+initial_position = int(input("Enter the initial position of the disk head: "))
+
+requests = []
+for i in range(num_requests):
+    request = int(input(f"Enter the position for request {i + 1}: "))
+    requests.append(request)
+
+current_position = initial_position
+seek_count = 0
+seek_sequence = []
+
+for request in requests:
+    
+    seek_time = abs(current_position - request)
+    seek_count += seek_time
+    current_position = request
+    seek_sequence.append(request)
+
+avg_seek_time = seek_count / num_requests
+
+
+print("\nSeek Sequence:", seek_sequence)
+print(f"Total Seek Time: {seek_count}")
+print(f"Average Seek Time: {avg_seek_time:.2f}")
