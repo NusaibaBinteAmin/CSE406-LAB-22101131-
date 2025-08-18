@@ -1,0 +1,35 @@
+def sstf(requests, head):
+    n = len(requests)
+    visited = [False] * n
+    seek_sequence = []
+    total_seek_time = 0
+    current_position = head
+
+    for i in range(n):
+        min_distance = float('inf')
+        min_index = -1
+
+        for i in range(n):
+            if not visited[i]:
+                distance = abs(current_position - requests[i])
+                if distance < min_distance:
+                    min_distance = distance
+                    min_index = i
+
+        visited[min_index] = True
+        total_seek_time += min_distance
+        current_position = requests[min_index]
+        seek_sequence.append(current_position)
+
+    return seek_sequence, total_seek_time
+
+disk_requests = [11,34,41,50,52,69,70,114]
+
+starting_head_position = 50
+
+
+served_order, total_seek = sstf(disk_requests, starting_head_position)
+
+print("Order of requests served:", served_order)
+print("Total seek time:", total_seek)
+print("Number of seek operations:", len(served_order))  
