@@ -1,0 +1,39 @@
+def scan(requests, head, disk_size, direction="right"):
+    requests.sort()
+    
+    seek_sequence = []
+    total_seek_time = 0
+    current_position = head
+
+    left = [r for r in requests if r < head]
+    right = [r for r in requests if r >= head]
+
+    if direction == "left":
+     
+        left.append(0)
+    else:
+        right.append(disk_size - 1)
+
+    if direction == "left":
+        scan_order = sorted(left, reverse=True) + right
+    else:
+        scan_order = right + sorted(left, reverse=True)
+
+    for track in scan_order:
+        distance = abs(current_position - track)
+        total_seek_time += distance
+        current_position = track
+        seek_sequence.append(track)
+
+    return seek_sequence, total_seek_time
+
+disk_requests = [11,34,41,50,52,69,70,114]
+starting_head_position = 50
+disk_size = 200   
+direction = "right" 
+
+served_order, total_seek = scan(disk_requests, starting_head_position, disk_size, direction)
+
+print("Order of requests served:", served_order)
+print("Total seek time:", total_seek)
+print("Number of seek operations:", len(served_order))
