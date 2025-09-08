@@ -1,0 +1,70 @@
+num_processes = int(input("Enter the number of processes: "))
+
+process_details = {}
+
+for i in range(num_processes):
+    process_id = f"P{i + 1}"
+    arrival_time = int(input(f"Enter Arrival Time for {process_id}: "))
+    burst_time = int(input(f"Enter Burst Time for {process_id}: "))
+    process_details[process_id] = [arrival_time, burst_time]
+
+time_quantum = int(input("Enter Time Quantum: "))
+
+sorted_processes = sorted(process_details.items(), key=lambda item: item[1][0])
+
+remaining_time = {pid: bt for pid, (at, bt) in sorted_processes}
+arrival_time_dict = {pid: at for pid, (at, bt) in sorted_processes}
+finish_time_dict = {}
+process_queue = []
+processed_set = set()
+current_time = 0
+
+while len(finish_time_dict) < num_processes:
+    
+    for pid in arrival_time_dict:
+        if arrival_time_dict[pid] <= current_time and pid not in processed_set:
+            process_queue.append(pid)
+            processed_set.add(pid)
+
+    if not process_queue:
+        current_time += 1
+        continue
+
+    current_process = process_queue.pop(0)
+    run_time = min(time_quantum, remaining_time[current_process])
+    current_time += run_time
+    remaining_time[current_process] -= run_time
+
+    for pid in arrival_time_dict:
+        if arrival_time_dict[pid] <= current_time and pid not in processed_set:
+            process_queue.append(pid)
+            processed_set.add(pid)
+
+    
+    if remaining_time[current_process] > 0:
+        process_queue.append(current_process)
+    else:
+        finish_time_dict[current_process] = current_time
+
+turnaround_times = {}
+waiting_times = {}
+
+for pid, (arrival, burst) in sorted_processes:
+    completion_time = finish_time_dict[pid]
+    turnaround = completion_time - arrival
+    waiting = turnaround - burst
+    turnaround_times[pid] = turnaround
+    waiting_times[pid] = waiting
+
+print("| Process ID | Arrival | Burst | Completion | Turnaround | Waiting Time |")
+for pid, (arrival, burst) in sorted_processes:
+    completion = finish_time_dict[pid]
+    turnaround = turnaround_times[pid]
+    waiting = waiting_times[pid]
+    print(f"{pid:<11} | {arrival:<8} | {burst:<6} | {completion:<11} | {turnaround:<10} | {waiting}")
+
+avg_waiting_time = sum(waiting_times.values()) / num_processes
+avg_turnaround_time = sum(turnaround_times.values()) / num_processes
+
+print(f"\nAverage Waiting Time: {avg_waiting_time:.2f}")
+print(f"Average Turnaround Time: {avg_turnaround_time:.2f}")
