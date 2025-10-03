@@ -1,0 +1,72 @@
+disk_requests = [21, 39, 64, 79, 90, 176]
+move_direction = input("Enter direction (left/right): ").strip().lower()
+head_position = int(input("Pick a head--> "))
+
+disk_requests.sort()
+
+seek_time_total = 0
+head_moves = [head_position]  
+current_head = head_position
+
+min_request = min(disk_requests)
+max_request = max(disk_requests)
+
+if move_direction == "right":
+    
+    right_side = [req for req in disk_requests if req >= current_head]
+   
+    left_side = [req for req in disk_requests if req < current_head]
+
+    for req in right_side:
+        distance = abs(current_head - req)
+        print(f"Move from {current_head} to {req}, seek = {distance}")
+        seek_time_total += distance
+        current_head = req
+        head_moves.append(current_head)
+
+    if left_side:
+        distance = abs(current_head - max_request)
+        seek_time_total += distance
+        print(f"Jump from {current_head} to {max_request} (circular move)")
+        current_head = max_request
+        head_moves.append(current_head)
+
+        for req in left_side:
+            distance = abs(current_head - req)
+            print(f"Move from {current_head} to {req}, seek = {distance}")
+            seek_time_total += distance
+            current_head = req
+            head_moves.append(current_head)
+
+elif move_direction == "left":
+    
+    left_side = [req for req in disk_requests if req <= current_head]
+   
+    right_side = [req for req in disk_requests if req > current_head]
+
+    
+    for req in reversed(left_side):
+        distance = abs(current_head - req)
+        print(f"Move from {current_head} to {req}, seek = {distance}")
+        seek_time_total += distance
+        current_head = req
+        head_moves.append(current_head)
+
+    if right_side:
+        distance = abs(current_head - min_request)
+        seek_time_total += distance
+        print(f"Jump from {current_head} to {min_request} (circular move)")
+        current_head = min_request
+        head_moves.append(current_head)
+
+        for req in right_side:
+            distance = abs(current_head - req)
+            print(f"Move from {current_head} to {req}, seek = {distance}")
+            seek_time_total += distance
+            current_head = req
+            head_moves.append(current_head)
+
+
+print("\nHead move order:", head_moves)
+print(f"Number of seek operations: {len(head_moves) - 1}")
+print(f"Total seek time = {seek_time_total}")
