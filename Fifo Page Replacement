@@ -1,0 +1,38 @@
+pages = [1, 3, 0, 3, 5, 6, 3]  
+frame_size = int(input("Enter the frame size: "))
+
+def fifo_page_replacement(pages, frame_size):
+    memory = []         
+    page_faults = 0      
+    page_hits = 0        
+    queue_index = 0     
+
+    print("Page Reference String:", pages)
+    print("Frame Size:", frame_size)
+    print("\nStep by Step Execution:\n")
+
+    for i, page in enumerate(pages):
+        if page not in memory:
+            
+            if len(memory) < frame_size:
+                memory.append(page)
+            else:
+                
+                memory[queue_index] = page
+                queue_index = (queue_index + 1) % frame_size
+
+            page_faults += 1
+            print(f"Step {i+1}: Page {page} -> Page Fault! Memory: {memory}")
+        else:
+           
+            page_hits += 1
+            print(f"Step {i+1}: Page {page} -> Hit! Memory: {memory}")
+
+    hit_rate = page_hits / len(pages) * 100  
+    print("\n")
+    print("Total Page Faults:", page_faults)
+    print("Total Page Hits:", page_hits)
+    print(f"Hit Rate: {hit_rate:.2f}%")
+    print("Final Memory State:", memory)
+    
+fifo_page_replacement(pages, frame_size)
