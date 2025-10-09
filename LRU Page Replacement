@@ -1,45 +1,42 @@
-pages = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0] 
-frame_size = int(input("Enter the frame size: "))
+def lru_page_replacement(pages, frame_count):
+    frames = []              
+    faults = 0                
+    hits = 0                  
+    last_used = {}           
 
-def lru_page_replacement(pages, frame_size):
-    memory = []          
-    page_faults = 0      
-    page_hits = 0       
-    recent_use = {}     
+    print("Reference String:", pages)
+    print("Frame Size:", frame_count)
+    print("\nExecution Process:\n")
 
-    print("Page Reference String:", pages)
-    print("Frame Size:", frame_size)
-    print("\nStep by Step Execution:\n")
-
-    for i, page in enumerate(pages):
-        if page not in memory:
-           
-            if len(memory) < frame_size:
-                memory.append(page)
-            else:
-                
-                lru_page = min(memory, key=lambda p: recent_use[p])
-                memory[memory.index(lru_page)] = page
-
-            page_faults += 1
-            print(f"Step {i+1}: Page {page} -> Page Fault! Memory: {memory}")
-        else:
-            
-            page_hits += 1
-            print(f"Step {i+1}: Page {page} -> Hit! Memory: {memory}")
-
+    for index, page in enumerate(pages):
+        if page not in frames:
         
-        recent_use[page] = i
+            if len(frames) < frame_count:
+                frames.append(page)
+            else:
+                lru = min(frames, key=lambda p: last_used[p])
+                replace_index = frames.index(lru)
+                frames[replace_index] = page
 
-   
-    hit_rate = (page_hits / len(pages)) * 100
+            faults += 1
+            print(f"Step {index + 1}: Page {page} → Fault | Frames: {frames}")
+        else:
+            hits += 1
+            print(f"Step {index + 1}: Page {page} → Hit   | Frames: {frames}")
 
-    print("\n")
-    print("Total Page Faults:", page_faults)
-    print("Total Page Hits:", page_hits)
-    print(f"Hit Rate: {hit_rate:.2f}%")
-    print("Final Memory State:", memory)
- 
+        last_used[page] = index
 
-lru_page_replacement(pages, frame_size)
+    hit_ratio = (hits / len(pages)) * 100
+    miss_ratio = 100 - hit_ratio
 
+    print("\nSummary:")
+    print(f"Total Page Faults: {faults}")
+    print(f"Total Page Hits: {hits}")
+    print(f"Hit Ratio: {hit_ratio:.2f}%")
+    print(f"Miss Ratio: {miss_ratio:.2f}%")
+    print("Final Frame Content:", frames)
+
+pages = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0]
+frame_count = int(input("Enter the frame size: "))
+
+lru_page_replacement(pages, frame_count)
